@@ -5,6 +5,6 @@ var router=express.Router();
 const { verifyuser, verifyadmin } = require('../utils/verifytoken.js');
 
 
-router.post("/:id",newchat)
+router.post("/:id",newchat);
 router.get("/:userId", getchat);
 module.exports=router;
