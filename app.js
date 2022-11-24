@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const bdyp = require('body-parser')
 const { urlencoded } = require('body-parser')
 const app = exp()
+const gamepointtable=require("./models/GamePointTable.js");
 const authroute=require('./routes/auth.js')
 const chatroute=require('./routes/chat.js')
 const hotelroute=require('./routes/hotels.js')
@@ -52,8 +53,24 @@ app.get("/api/view",(req,res)=>{
     res.send("in get api")
     
 })
-app.post("/api/post",(req,res)=>{
-    res.send("post api")
+app.post("/group/create",(req,res)=>{
+
+    // const groups = new createGroup({
+    //     GroupId: req.body.GroupName, GroupImage: "./assets/img1.png" ,GroupType: req.body.GroupType
+    // })
+
+    // const groups = new posts({
+    //     UserId: req.body.UserId,PostImage:"./assets/img2.png",Tags:req.body.Tags
+    //  })
+const groups = new gamepointtable(req.body)
+groups.save((error,data)=>{
+    if(error){
+        res.send(error)
+    }
+    else{
+        res.send(data)
+    }
+})
 
 })
 //middle
@@ -64,6 +81,7 @@ app.use("/hotels",hotelroute);
 app.use("/rooms",roomroute);
 app.use("/chats",chatroute);
 app.use("/messages",msgroute);
+
 
 
 
