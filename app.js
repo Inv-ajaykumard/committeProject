@@ -11,7 +11,7 @@ const hotelroute=require('./routes/hotels.js')
 const userroute=require('./routes/user.js')
 const roomroute=require('./routes/rooms.js')
 const msgroute=require('./routes/messages.js')
-
+const eventRoute= require('./routes/Event.js')
 app.use(urlencoded({ extended: true }))
 app.use(bdyp.json())
 
@@ -81,7 +81,7 @@ app.use("/hotels",hotelroute);
 app.use("/rooms",roomroute);
 app.use("/chats",chatroute);
 app.use("/messages",msgroute);
-
+app.use("/Event",eventRoute);
 
 
 
