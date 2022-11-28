@@ -1,12 +1,45 @@
 const exp = require("express");
 const User = require("../models/User");
+const userstable = require("../models/UserTable.js");
 const bcrypt = require('bcryptjs')
 const jwt=require('jsonwebtoken');
 
 var cookieParser = require('cookie-parser');
 const { application } = require("express");
+const { stringify } = require("qs");
 application.use(cookieParser())
-require('dotenv').config();  
+require('dotenv').config(); 
+
+
+
+
+exports.csvAuth=(req,res)=>{
+    const csvFilePath='simple.csv'
+    const csv=require('csvtojson')
+    csv()
+    .fromFile(csvFilePath)
+    .then((jsonObj)=>{
+    console.log(jsonObj);
+       
+    newAuthfun(jsonObj);
+    
+    })
+
+    const newAuthfun=async(jsonObj)=>{
+         jsonObj.forEach(function(obj) { 
+            const saveuser=new userstable(obj);
+           saveuser.save((error,data)=>{
+            if(error){
+                res.send(error)
+            }
+
+           });
+           });
+           res.send("successfully saved")
+   
+       
+    }
+} 
 exports.newauth = (req, res) => {
 
     var data = {
