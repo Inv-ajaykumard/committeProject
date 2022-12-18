@@ -2,44 +2,46 @@ const exp = require("express");
 const User = require("../models/User");
 const userstable = require("../models/UserTable.js");
 const bcrypt = require('bcryptjs')
-const jwt=require('jsonwebtoken');
-
+const jwt = require('jsonwebtoken');
+const app=exp()
 var cookieParser = require('cookie-parser');
 const { application } = require("express");
 const { stringify } = require("qs");
 application.use(cookieParser())
-require('dotenv').config(); 
+require('dotenv').config();
 
+//google authentication
+require('../Passport.js')
+const passport = require('passport');
+const cookieSession = require('cookie-session');
 
-
-
-exports.csvAuth=(req,res)=>{
-    const csvFilePath='simple.csv'
-    const csv=require('csvtojson')
+exports.csvAuth = (req, res) => {
+    const csvFilePath = 'simple.csv'
+    const csv = require('csvtojson')
     csv()
-    .fromFile(csvFilePath)
-    .then((jsonObj)=>{
-    console.log(jsonObj);
-       
-    newAuthfun(jsonObj);
-    
-    })
+        .fromFile(csvFilePath)
+        .then((jsonObj) => {
+            console.log(jsonObj);
 
-    const newAuthfun=async(jsonObj)=>{
-         jsonObj.forEach(function(obj) { 
-            const saveuser=new userstable(obj);
-           saveuser.save((error,data)=>{
-            if(error){
-                res.send(error)
-            }
+            newAuthfun(jsonObj);
 
-           });
-           });
-           res.send("successfully saved")
-   
-       
+        })
+
+    const newAuthfun = async (jsonObj) => {
+        jsonObj.forEach(function (obj) {
+            const saveuser = new userstable(obj);
+            saveuser.save((error, data) => {
+                if (error) {
+                    res.send(error)
+                }
+
+            });
+        });
+        res.send("successfully saved")
+
+
     }
-} 
+}
 exports.newauth = (req, res) => {
 
     var data = {
@@ -66,26 +68,26 @@ exports.newlogin = async (req, res, next) => {
 
     try {
         console.log(process.env.tk1)
-       
-        const users = await User.findOne({username:req.body.username});
-        if(users){
-            const passmatch=  bcrypt.compareSync(req.body.password,users.password );
-            const envtoken=process.env.tk1;
-            
-            if(passmatch){
-                const{password,isAdmin,...otherDetails}=users._doc;
-                const token=jwt.sign({id:users._id,isAdmin:users.isAdmin},envtoken)
-                
-                res.cookie("accesstoken",token,{httpOnly:true}).send({"data":otherDetails,"token":token})
+
+        const users = await User.findOne({ username: req.body.username });
+        if (users) {
+            const passmatch = bcrypt.compareSync(req.body.password, users.password);
+            const envtoken = process.env.tk1;
+
+            if (passmatch) {
+                const { password, isAdmin, ...otherDetails } = users._doc;
+                const token = jwt.sign({ id: users._id, isAdmin: users.isAdmin }, envtoken)
+
+                res.cookie("accesstoken", token, { httpOnly: true }).send({ "data": otherDetails, "token": token })
             }
-            else{
+            else {
                 res.send("invalid credintials")
             }
-        
+
         }
-      else{
-        res.send("not found")
-      }
+        else {
+            res.send("not found")
+        }
 
     }
 
@@ -96,3 +98,16 @@ exports.newlogin = async (req, res, next) => {
 
 
 }
+
+
+
+///google authentications
+exports.googlelogin = (req, res) => {
+    res.send("<button><a href='/auth'>Login With Google</a></button>")
+}
+exports.googleopen = passport.authenticate('google', {
+    scope:
+        ['email', 'profile']
+});
+
+

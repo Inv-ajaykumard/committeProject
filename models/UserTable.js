@@ -19,6 +19,11 @@ const UserSchema=new moongoose.Schema({
     Type:{
         type:Number,
         default:false
+    },
+    Designation:{
+        type:String,
+        require:true
+
     }
     
 },{timestamps:true})

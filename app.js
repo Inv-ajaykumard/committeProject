@@ -1,8 +1,9 @@
 
-const exp = require('express')
+
 const mongoose = require('mongoose')
 const bdyp = require('body-parser')
 const { urlencoded } = require('body-parser')
+const exp = require('express')
 const app = exp()
 const gamepointtable=require("./models/GamePointTable.js");
 const authroute=require('./routes/auth.js')
@@ -12,9 +13,12 @@ const userroute=require('./routes/user.js')
 const roomroute=require('./routes/rooms.js')
 const msgroute=require('./routes/messages.js')
 const eventRoute= require('./routes/Event.js')
+const imageUpload=require('./routes/imageUpload.js')
 app.use(urlencoded({ extended: true }))
 app.use(bdyp.json())
+const fileupload=require('express-fileupload')
 
+app.use(fileupload())
 const connect=async ()=>{
     try{
 
@@ -55,6 +59,8 @@ app.get("/api/view",(req,res)=>{
 })
 app.post("/group/create",(req,res)=>{
 
+ console.log(req.files.data)
+    res.send(req.files)
     // const groups = new createGroup({
     //     GroupId: req.body.GroupName, GroupImage: "./assets/img1.png" ,GroupType: req.body.GroupType
     // })
@@ -82,6 +88,7 @@ app.use("/rooms",roomroute);
 app.use("/chats",chatroute);
 app.use("/messages",msgroute);
 app.use("/Event",eventRoute);
+app.use("/image",imageUpload);
 
 
 
